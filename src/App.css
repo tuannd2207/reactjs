@@ -1,9 +1,3 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
 .logo {
   height: 6em;
@@ -38,4 +32,125 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  background-color: #d3d6db; /* Light grey background similar to the image */
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.keyboard-key {
+  margin: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100px;
+  padding-bottom: 15px;
+  height: 50px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  align-items: self-start;
+  justify-content: center;
+}
+
+.keyboard-key.zero-key {
+  align-items: center;
+}
+
+.keyboard-key .subtext {
+  font-size: 10px;
+  position: absolute;
+  bottom: 25%;
+  left: 50%;
+  transform: translate(-50%, 25%);
+  color: #888;
+}
+
+.keyboard-key:active {
+  background-color: #e0e0e0;
+}
+
+/* Center the icon within the button */
+.keyboard-key svg {
+  vertical-align: middle;
+}
+
+/* Add responsiveness for smaller screens */
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.inputs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 5px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: #fff; /* Ensure input fields have the same background */
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border: 1px solid rgb(148, 146, 146);
+  border-radius: 4px;
+}
+
+/* Add responsiveness for smaller screens */
+.last-row{
+  justify-content: flex-end;
+  width: 100%;
+}
+input:focus{
+  border: 2px solid green;
+  outline: none;
+
+}
+.backspace{
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: unset;
+  align-items: center;
+}
+.close{
+  margin-top: 1000px;
+  transition: margin-top 30ms ease-in;
+
+}
+.open{
+  margin-top: 0;
+  transition: margin-top 300ms ease-out;
+}
+.fake-done{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.fake-done > button{
+  background: transparent;
+  color: dodgerblue;
+  outline: unset;
+  border: unset;
 }
