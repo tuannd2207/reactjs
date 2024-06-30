@@ -1,12 +1,8 @@
 import React, {FC, ReactNode, useRef, useState} from 'react';
-import {State} from './reducer/contactsReducer';
 import './App.css'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBackspace} from '@fortawesome/free-solid-svg-icons';
 
-const initialState: State = {
-    contacts: []
-};
 const keys = [
     [{value: '1', text: ''}, {value: '2', text: 'ABC'}, {value: '3', text: 'DEF'}],
     [{value: '4', text: 'GHI'}, {value: '5', text: 'JKL'}, {value: '6', text: 'MNO'}],
