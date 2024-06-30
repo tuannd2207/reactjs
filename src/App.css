@@ -156,3 +156,19 @@ input:focus{
   pointer-events: none;
   visibility: hidden;
 }
+.test-disabled{
+  background-color: #6f42c1;
+  border: 1px solid #0c4128;
+  width: 120px;
+  outline: none;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  color: white;
+}
+.test-disabled:disabled{
+  opacity: .6;
+}

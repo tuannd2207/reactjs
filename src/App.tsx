@@ -1,9 +1,5 @@
-import React, {FC, MouseEventHandler, ReactNode, useEffect, useReducer, useRef, useState} from 'react';
-import ContactForm from './components/ContactForm';
-import ContactList from './components/ContactList';
-import EditModal from './components/EditModal';
-import Header from './components/Header';
-import {Contact, contactsReducer, State} from './reducer/contactsReducer';
+import React, {FC, ReactNode, useRef, useState} from 'react';
+import {State} from './reducer/contactsReducer';
 import './App.css'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBackspace} from '@fortawesome/free-solid-svg-icons';
@@ -104,6 +100,9 @@ function App() {
                     </button>}
                 </div>
              </NumberKeyboard>
+            <button className="test-disabled" disabled={inputs.join('').length < 6} onClick={() => {
+                console.log("log");
+            }}>click</button>
         </div>
     );
 }
