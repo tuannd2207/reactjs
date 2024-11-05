@@ -1,105 +1,84 @@
-import React, {FC, ReactNode, useRef, useState} from 'react';
+import React, {useEffect} from 'react';
 import './App.css'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faBackspace} from '@fortawesome/free-solid-svg-icons';
-
-const keys = [
-    [{value: '1', text: ''}, {value: '2', text: 'ABC'}, {value: '3', text: 'DEF'}],
-    [{value: '4', text: 'GHI'}, {value: '5', text: 'JKL'}, {value: '6', text: 'MNO'}],
-    [{value: '7', text: 'PQRS'}, {value: '8', text: 'TUV'}, {value: '9', text: 'WXYZ'}],
-    [{value: '', text: '', className: 'hidden-key'}, {value: '0', text: '', className: 'zero-key'}, {value: 'Backspace', text: ''}]
-];
-const NumberKeyboard: FC<{ onKeyPress: (key: string) => void, children: ReactNode, className: string }> = ({onKeyPress, children, className}) => {
-    return (
-        <>
-            {children}
-            <div className={`keyboard ${className}`}>
-                {keys.map((row, rowIndex) => (
-                    <div key={rowIndex} className={`keyboard-row ${rowIndex !== keys.length - 1 ? '' : 'last-row'}`}>
-                        {row.map((key) => (
-                            <button
-                                key={key.value}
-                                className={`keyboard-key ${key.className || ''} ${key.value === 'Backspace' ? 'backspace' : ''}`}
-                                onClick={() => onKeyPress(key.value)}
-                            >
-                                {key.value === 'Backspace' ? (
-                                    <FontAwesomeIcon icon={faBackspace}/>
-                                ) : (
-                                    <>
-                                        {key.value}
-                                        <div className="subtext">{key.text}</div>
-                                    </>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                ))}
-            </div>
-        </>
-
-    );
-};
+import {io} from "socket.io-client";
 
 function App() {
-    const [inputs, setInputs] = useState(Array(6).fill(''));
-    const [activeInput, setActiveInput] = useState(0);
-    const [isOpenKeyBoard, setIsOpenKeyBoard] = useState(true);
-    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    //Url kết nối socket đến server
+    const baseUrl = 'https://seastock.aseansc.com.vn';
+    //SDK_INFO yêu cầu server
+    const SDK_INFO = {
+        '__sails_io_sdk_version': '1.2.1',
+        '__sails_io_sdk_platform': 'browser',
+        '__sails_io_sdk_language': 'javascript',
+    };
+    // Khởi tạo socket client kết nối tới server
+    const socket = io(baseUrl, {
+        path: '/realtime/socket.io',
+        transports: ['websocket'],
+        query: SDK_INFO,
+        autoConnect: false
+    });
 
-    const handleKeyPress = (key: string) => {
-        const newInputs = [...inputs];
+    const _subscribeToTopics = (topics) => {
+        const token = 'Uk42SElHRVM3WDpDNUNkdEN2TUU1dGNtVUhRWlF3ZHpXcVU5dWNXVVo='; //token chuỗi mã hóa base64 cặp clientid với clientsecret được cấp khi gọi openapi
+        socket.emit('get', {
+                url: '/client/send',
+                method: 'get',
+                headers: {},
+                data: {
+                    op: 'subscribe',
+                    args: topics,
+                    token: token
+                }
+            }, (response) => {
+                if (response.statusCode === 200) {
+                    console.log('Subscribed to topics ' + topics.join(', '));
+                } else {
+                    console.log('Fail to subscribe to topics ' + topics.join(', '));
+                }
+            }
+        );
 
-        if (key === 'Backspace') {
-            if (newInputs[activeInput].length > 0) {
-                newInputs[activeInput] = '';
-                inputRefs.current[activeInput]?.focus();
-            } else if (activeInput > 0) {
-                setActiveInput(activeInput - 1);
-                newInputs[activeInput - 1] = '';
-                inputRefs.current[activeInput - 1]?.focus();
-            }
-        } else {
-            newInputs[activeInput] = key;
-            if (activeInput < 5) {
-                setActiveInput(activeInput + 1);
-            } else if (activeInput === 5 && newInputs[activeInput].length === 0) {
-                newInputs[activeInput] = key;
-            }
-        }
-        setInputs(newInputs);
+        return true;
     };
 
-    return (
-        <div className="App">
-            <div className="inputs">
-                {inputs.map((input, index) => (
-                    <input
-                        key={index}
-                        type="tel"
-                        maxLength={1}
-                        value={input}
-                        onClick={() => {
-                            setActiveInput(index);
-                            setIsOpenKeyBoard(true);
-                        }}
-                        ref={el => (inputRefs.current[index] = el)}
-                        readOnly
-                    />
-                ))}
-            </div>
+    const _unsubscribeFromTopics = (topics) => {
+        socket.emit('get', {
+                url: '/client/send',
+                method: 'get',
+                headers: {},
+                data: {
+                    op: 'unsubscribe',
+                    args: topics
+                }
+            }, (response) => {
+                if (response.statusCode === 200) {
+                    console.log('Unsubscribed from topics ' + topics.join(', '));
+                } else {
+                    console.log('Fail to unsubscribe from topics ' + topics.join(', '));
+                }
+            }
+        );
+    };
+    let reqid = '20241021593774'
+    useEffect(() => {
+        // Gửi yêu cầu "subscribe" tới room "rpt:reqid" với reqid là giá trị reqid khi mở tài khoản bước đầu nhận được
+        socket.open();
 
-             <NumberKeyboard className={isOpenKeyBoard ? 'open' : 'close'} onKeyPress={handleKeyPress}>
-                <div className="fake-done">
-                    {isOpenKeyBoard && <button onClick={() => {
-                        setIsOpenKeyBoard(!isOpenKeyBoard);
-                    }}>Done
-                    </button>}
-                </div>
-             </NumberKeyboard>
-            <button className="test-disabled" disabled={inputs.join('').length < 6} onClick={() => {
-                console.log("log");
-            }}>click</button>
-        </div>
+        _subscribeToTopics(['rpt:' + reqid]);
+        // Lắng nghe phản hồi từ server
+        socket.on('rpt:' + reqid, (data) => {
+            console.log('Response server:', data);
+        });
+
+        // Gửi yêu cầu "unsubscribe" tới room "rpt:reqid" với reqid là giá trị reqid khi mở tài khoản bước đầu nhận được
+        return () => {
+            _unsubscribeFromTopics(['rpt:' + reqid]);
+            return socket.close();
+        };
+    }, []);
+    return (
+        <div>aadsd</div>
     );
 }
 
